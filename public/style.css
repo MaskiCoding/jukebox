@@ -15,6 +15,8 @@
 
 * { box-sizing: border-box; }
 
+[hidden] { display: none !important; }
+
 html, body { height: 100%; }
 
 body {
@@ -206,11 +208,60 @@ button { font: inherit; cursor: pointer; }
   display: grid;
   place-items: center;
   padding: 10%;
+  background: #090605;
   color: rgba(251, 245, 230, 0.75);
   font-family: var(--type);
   font-size: clamp(12px, 1.2vw, 18px);
   text-align: center;
 }
+
+.window .skipnote {
+  position: absolute;
+  inset: auto 6% 8%;
+  z-index: 1;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(20, 8, 6, 0.88);
+  box-shadow: 0 0 0 2px var(--red), 0 0 18px rgba(200, 53, 43, 0.6);
+  color: var(--paper);
+  font-family: var(--type);
+  font-size: clamp(11px, 0.95vw, 16px);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.cabinet:not(.playing) .window .skipnote {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 12% 10% 8%;
+  border-radius: 0;
+  background: #090605;
+  box-shadow: none;
+}
+
+.marquee {
+  position: absolute;
+  inset: 7% 12% auto;
+  z-index: 2;
+  overflow: hidden;
+  padding: 0.5em 0;
+  border-radius: 999px;
+  background: rgba(10, 4, 8, 0.82);
+  box-shadow: 0 0 0 2px #ff4fa3, 0 0 24px rgba(255, 79, 163, 0.55);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.marquee span {
+  display: inline-block;
+  padding-left: 100%;
+  font-size: clamp(14px, 1.7vw, 30px);
+  animation: marquee 9s linear 2, buzz 6s infinite;
+}
+
+@keyframes marquee { to { transform: translateX(-100%); } }
 
 .window::after {
   content: "";
@@ -281,7 +332,6 @@ button { font: inherit; cursor: pointer; }
   transform: translateX(-50%);
 }
 
-.plug[hidden] { display: none; }
 
 .add-page {
   max-width: 480px;
@@ -347,6 +397,46 @@ button { font: inherit; cursor: pointer; }
   100% { transform: translateY(40px) rotateX(90deg) scale(0.6); opacity: 0; }
 }
 
+.rose {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-left: auto;
+  border: 2px solid #ff4fa3;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  color: #ffd1e6;
+  font-size: 26px;
+  line-height: 1;
+  box-shadow: 0 0 16px rgba(255, 79, 163, 0.4);
+}
+
+.rose small { font-family: var(--type); font-size: 11px; }
+.rose.thrown { animation: toss 0.5s ease-out; }
+
+@keyframes toss {
+  40% { transform: translateY(-14px) rotate(-25deg) scale(1.1); }
+}
+
+.hint { margin: 14px 4px 0; color: rgba(251, 245, 230, 0.6); font-family: var(--type); font-size: 13px; line-height: 1.4; }
+
+.slot.compact {
+  width: min(26vw, 380px);
+  margin-top: 6px;
+  padding: 12px;
+  border-radius: 20px;
+  text-align: left;
+}
+
+.slot.compact label { font-size: clamp(11px, 0.85vw, 14px); }
+.slot.compact input { margin-bottom: 8px; padding: 8px 10px; font-size: clamp(12px, 0.95vw, 15px); }
+.slot.compact .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.slot.compact .coin { width: 64px; height: 64px; font-size: 11px; }
+.slot.compact .rose { width: 52px; height: 52px; font-size: 20px; }
+.slot.compact .msg { font-size: clamp(11px, 0.85vw, 14px); color: var(--paper); }
+
 .msg { margin: 0; font-family: var(--type); font-size: 15px; line-height: 1.35; }
 .msg.err { color: #ffb3a8; }
 
@@ -409,5 +499,6 @@ button { font: inherit; cursor: pointer; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .neon, .cabinet::before, .cabinet.playing .grille, .coin.drop { animation: none; }
+  .neon, .cabinet::before, .cabinet.playing .grille, .coin.drop, .rose.thrown { animation: none; }
+  .marquee span { animation: marquee 9s linear 2; }
 }

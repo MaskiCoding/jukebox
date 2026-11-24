@@ -1,26 +1,8 @@
 const $ = (id) => document.getElementById(id);
-
-function stored(key, make) {
-  try {
-    const value = localStorage.getItem(key) ?? make();
-    localStorage.setItem(key, value);
-    return value;
-  } catch {
-    return make();
-  }
-}
-
-const client = stored("jukebox-client", () => crypto.randomUUID());
+const { post } = window.Coin;
 const voted = new Set();
 let booedFor = null;
 let state = null;
-
-$("by").value = stored("jukebox-name", () => "");
-$("by").addEventListener("change", () => {
-  try {
-    localStorage.setItem("jukebox-name", $("by").value.trim());
-  } catch {}
-});
 
 function el(tag, cls, text) {
   const node = document.createElement(tag);
@@ -28,34 +10,6 @@ function el(tag, cls, text) {
   if (text != null) node.textContent = text;
   return node;
 }
-
-async function post(path, body) {
-  const res = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ client, ...body }) });
-  return { ok: res.ok, data: await res.json().catch(() => ({})) };
-}
-
-function say(text, err) {
-  $("msg").textContent = text;
-  $("msg").classList.toggle("err", Boolean(err));
-}
-
-$("form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const coin = $("coin");
-  coin.disabled = true;
-  coin.classList.add("drop");
-  say("Clink…");
-  const { ok, data } = await post("/api/add", { url: $("url").value, by: $("by").value });
-  setTimeout(() => {
-    coin.classList.remove("drop");
-    coin.disabled = false;
-  }, 600);
-  if (ok) {
-    say(`Queued: ${data.title}`);
-    $("url").value = "";
-    navigator.vibrate?.(30);
-  } else say(data.error ?? "The jukebox jammed. Try again.", true);
-});
 
 function render() {
   const { playing, queue, boosToSkip } = state;
@@ -108,4 +62,5 @@ const events = new EventSource("/events");
 events.onmessage = (e) => {
   state = JSON.parse(e.data);
   render();
+  window.Coin.heard(state);
 };
