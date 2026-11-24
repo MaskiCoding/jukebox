@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: jukebox
+  labels:
+    app.kubernetes.io/name: jukebox
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: jukebox
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {}
+    - ports:
+        - port: 3000
+          protocol: TCP
