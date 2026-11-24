@@ -10,6 +10,7 @@ let lyrics = { lines: [] };
 let lineIndex = -2;
 let lineChars = [];
 let typed = 0;
+let lineStart = 0;
 let seenSkip;
 let skipTimer = 0;
 
@@ -68,22 +69,19 @@ function render() {
 async function loadLyrics(song) {
   lyrics = { lines: [] };
   lineIndex = -2;
-  $("source").textContent = "";
   showLine(song.title);
   try {
     const res = await fetch(`/api/lyrics?id=${encodeURIComponent(song.id)}`);
     const data = await res.json();
     if (current !== song.id) return;
     lyrics = data.lines?.length ? data : { lines: [] };
-    $("source").textContent = data.source ? `lyrics: ${data.source} via lrclib` : "no synced lyrics found";
-  } catch {
-    $("source").textContent = "no synced lyrics found";
-  }
+  } catch {}
 }
 
 function showLine(text) {
   lineChars = Array.from(text);
   typed = 0;
+  lineStart = performance.now();
   garden?.clear();
   $("lyric").textContent = "";
 }
@@ -138,7 +136,7 @@ function tick() {
   if (!ready || !current) return;
   const lines = lyrics.lines;
   if (!lines.length) {
-    typeTo(Math.floor((performance.now() / 90) % 100000));
+    typeTo(window.Pace.lyricProgress((performance.now() - lineStart) / 1000, 0, lineChars.length, 0.18));
     return;
   }
   const t = player.getCurrentTime?.() ?? 0;
@@ -154,8 +152,7 @@ function tick() {
   if (idx < 0) return;
   const start = lines[idx].t;
   const end = lines[idx + 1]?.t ?? start + 4;
-  const p = Math.min(1, Math.max(0, (t - start) / Math.max(0.6, (end - start) * 0.7)));
-  typeTo(Math.ceil(p * lineChars.length));
+  typeTo(window.Pace.lyricProgress(t - start, end - start, lineChars.length, 0.07));
 }
 
 function sync() {
@@ -166,7 +163,6 @@ function sync() {
     current = null;
     showLine("");
     $("marquee").hidden = true;
-    $("source").textContent = "";
     render();
     return;
   }
@@ -212,7 +208,7 @@ $("plug").addEventListener("click", plugIn);
 
 document.fonts.load('700 100px "Playfair Display"').finally(() => {
   if (window.Garden) {
-    garden = window.Garden.create($("garden"), { transparent: true, palette: paletteFor(state?.playing) });
+    garden = window.Garden.create($("garden"), { transparent: true, palette: paletteFor(state?.playing), density: 0.55 });
     $("lyric").hidden = true;
   }
 });

@@ -152,7 +152,7 @@ button { font: inherit; cursor: pointer; }
 .boos i { width: 12px; height: 12px; border: 2px solid var(--red); border-radius: 50%; }
 .boos i.on { background: var(--red); box-shadow: 0 0 10px var(--red); }
 
-.credit { display: grid; justify-items: end; gap: 4px; margin: 0; color: rgba(251, 245, 230, 0.45); font-size: clamp(10px, 0.8vw, 13px); text-align: right; }
+.listeners { margin: 0; color: rgba(251, 245, 230, 0.45); font-size: clamp(10px, 0.8vw, 13px); text-align: right; }
 
 .cabinet {
   position: relative;
@@ -282,8 +282,22 @@ button { font: inherit; cursor: pointer; }
   box-shadow: inset 0 1px 0 #fff, 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-.grille {
+.coin-panel {
   flex: 1;
+  min-height: 0;
+  display: grid;
+  align-content: center;
+  padding: 2.5% 4%;
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.25), transparent 10%, transparent 90%, rgba(0, 0, 0, 0.25)),
+    linear-gradient(var(--chrome-hi), var(--chrome-lo));
+  box-shadow: inset 0 1px 0 #fff, inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.grille {
+  flex: none;
+  height: 5%;
   margin: 0 -2%;
   border-radius: 12px 12px 0 0;
   background:
@@ -423,19 +437,25 @@ button { font: inherit; cursor: pointer; }
 .hint { margin: 14px 4px 0; color: rgba(251, 245, 230, 0.6); font-family: var(--type); font-size: 13px; line-height: 1.4; }
 
 .slot.compact {
-  width: min(26vw, 380px);
-  margin-top: 6px;
-  padding: 12px;
-  border-radius: 20px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-areas: "url coin rose" "pair coin rose" "msg msg msg";
+  align-items: center;
+  gap: clamp(4px, 0.45vw, 8px) clamp(8px, 0.8vw, 14px);
+  margin: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
   text-align: left;
 }
 
-.slot.compact label { font-size: clamp(11px, 0.85vw, 14px); }
-.slot.compact input { margin-bottom: 8px; padding: 8px 10px; font-size: clamp(12px, 0.95vw, 15px); }
-.slot.compact .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.slot.compact .coin { width: 64px; height: 64px; font-size: 11px; }
-.slot.compact .rose { width: 52px; height: 52px; font-size: 20px; }
-.slot.compact .msg { font-size: clamp(11px, 0.85vw, 14px); color: var(--paper); }
+.slot.compact #url { grid-area: url; }
+.slot.compact .pair { grid-area: pair; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(4px, 0.45vw, 8px); }
+.slot.compact input { margin: 0; padding: clamp(4px, 0.4vw, 8px) clamp(6px, 0.55vw, 10px); font-size: clamp(11px, 0.9vw, 15px); }
+.slot.compact .coin { grid-area: coin; width: clamp(48px, 3.7vw, 72px); height: clamp(48px, 3.7vw, 72px); font-size: clamp(9px, 0.65vw, 12px); }
+.slot.compact .rose { grid-area: rose; width: clamp(40px, 3vw, 58px); height: clamp(40px, 3vw, 58px); margin: 0; font-size: clamp(15px, 1.15vw, 22px); }
+.slot.compact .rose small { font-size: clamp(8px, 0.55vw, 11px); }
+.slot.compact .msg { grid-area: msg; font-size: clamp(10px, 0.8vw, 14px); color: var(--ink); }
 
 .msg { margin: 0; font-family: var(--type); font-size: 15px; line-height: 1.35; }
 .msg.err { color: #ffb3a8; }

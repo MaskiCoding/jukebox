@@ -14,7 +14,7 @@
     ['Blush', '#FAD4D8', '#C8102E', '#274690', '#FFE3E6', '#1A1A1A'],
     ['Mono', '#000000', '#F2F2F2', '#6E6E6E', '#000000', '#FFFFFF']
   ];
-  var DENSITY = 1, RECOIL = 20, WITHER = 260, BLOOM_LIFE = 7000, MAX_BLOOMS = 40;
+  var RECOIL = 20, WITHER = 260, BLOOM_LIFE = 7000, MAX_BLOOMS = 40;
 
   function h(n) { var x = Math.sin(n) * 43758.5453; return x - Math.floor(x); }
   function spr(t, k, w) { if (t <= 0) return 0; return 1 - Math.exp(-t * k) * Math.cos(t * w); }
@@ -83,9 +83,9 @@
     return segs;
   }
   function layerAt(segs, u) { for (var i = 0; i < segs.length; i++) if (u >= segs[i].u0 && u <= segs[i].u1) return segs[i].layer; return segs[segs.length - 1].layer; }
-  function wordParams(ws) {
-    var r = rng(ws * 7 + 13), dens = DENSITY;
-    return { roseP: 0.3 + r() * 0.3, leafy: (0.6 + r() * 0.8) * dens, dens: dens, lean: (r() - 0.5) * 0.6, big: 0.85 + r() * 0.45, curvy: 0.8 + r() * 0.6, bridgeP: Math.min(0.95, (0.45 + r() * 0.35) * dens), w: 0.5 };
+  function wordParams(ws, dens) {
+    var r = rng(ws * 7 + 13);
+    return { roseP: (0.3 + r() * 0.3) * dens, leafy: (0.6 + r() * 0.8) * dens, dens: dens, lean: (r() - 0.5) * 0.6, big: 0.85 + r() * 0.45, curvy: 0.8 + r() * 0.6, bridgeP: Math.min(0.95, (0.45 + r() * 0.35) * dens), w: 0.5 };
   }
   function grow(r, E, nid, p, o) {
     var tip = o.tip || (r() < p.roseP ? 'rose' : r() < 0.45 ? 'fan' : r() < 0.6 ? 'leaf' : 'curl');
@@ -107,7 +107,7 @@
       var over = tp[1] > -0.78 && tp[1] < 0.05 && Math.abs(tp[0]) < p.w * 0.5;
       var layer = over ? (r() < 0.22 ? 1 : 0) : (r() < 0.6 ? 1 : tl);
       E.push({ t: 'rose', id: nid(), x: tp[0], y: tp[1], R: R, rot: (r() - 0.5) * 1.0, ph1: r() * 6.28, ph2: r() * 6.28, turns: 1.8 + r() * 1, layer: layer, d0: td });
-      if (r() < 0.2) { var oo = ta + (r() < 0.5 ? 1 : -1) * 1.3; E.push({ t: 'rose', id: nid(), x: tp[0] + Math.cos(oo) * R * 1.4, y: tp[1] + Math.sin(oo) * R * 1.4, R: R * (0.6 + r() * 0.3), rot: (r() - 0.5) * 1.2, ph1: r() * 6.28, ph2: r() * 6.28, turns: 1.8 + r(), layer: layer, d0: td + 120 }); }
+      if (r() < 0.2 * p.dens) { var oo = ta + (r() < 0.5 ? 1 : -1) * 1.3; E.push({ t: 'rose', id: nid(), x: tp[0] + Math.cos(oo) * R * 1.4, y: tp[1] + Math.sin(oo) * R * 1.4, R: R * (0.6 + r() * 0.3), rot: (r() - 0.5) * 1.2, ph1: r() * 6.28, ph2: r() * 6.28, turns: 1.8 + r(), layer: layer, d0: td + 120 }); }
     } else if (tip === 'fan') {
       var spread = 0.6 + r() * 0.3;
       for (var j = 0; j < 2; j++) E.push({ t: 'leaf', id: nid(), x: tp[0], y: tp[1], a: ta + (j - 0.5) * spread, L: 0.2 + r() * 0.2, bend: (j - 0.5) * 0.8, layer: tl, d0: td + j * 60 });
@@ -126,6 +126,7 @@
     var g = canvas.getContext('2d');
     var transparent = !!options.transparent;
     var palette = PAL[options.palette] ? options.palette | 0 : 0;
+    var density = options.density != null ? +options.density : 1;
     var rm = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
     var letters = [], uid = 1, cache = {}, Sd = 0, St = 0, wrapped = false;
     var t0 = performance.now(), lastKey = 0, lt = 0, raf = 0, dead = false;
@@ -208,11 +209,11 @@
 
     function gen(l) {
       var r = rng((l.ws ^ Math.imul(l.wi + 1, 2654435761)) + Math.floor(Math.random() * 1e6));
-      var p = wordParams(l.ws), E = [], k0 = 0, nid = function () { return l.id * 100 + (k0++); };
+      var p = wordParams(l.ws, density), E = [], k0 = 0, nid = function () { return l.id * 100 + (k0++); };
       var w = mw(l.ch), inX = function () { return (r() - 0.5) * w * 0.7; }; p.w = w;
       var nUp = 1 + (r() < 0.45 * p.dens ? 1 : 0);
       for (var i = 0; i < nUp; i++) {
-        grow(r, E, nid, p, { base: [inX(), -r() * 0.3], dir: -Math.PI / 2 + p.lean * 0.5 + (r() - 0.5) * 0.7, len: 0.6 + r() * 0.5, d0: 40 + i * 130, tip: l.wi === 0 && i === 0 ? 'rose' : null });
+        grow(r, E, nid, p, { base: [inX(), -r() * 0.3], dir: -Math.PI / 2 + p.lean * 0.5 + (r() - 0.5) * 0.7, len: 0.6 + r() * 0.5, d0: 40 + i * 130, tip: l.wi === 0 && i === 0 && r() < p.dens ? 'rose' : null });
       }
       if (r() < 0.4 * p.dens) grow(r, E, nid, p, { base: [inX(), -0.1 - r() * 0.35], dir: Math.PI / 2 + (r() - 0.5) * 0.8, len: 0.35 + r() * 0.35, d0: 160 });
       if (l.prev && r() < p.bridgeP) {
@@ -221,7 +222,7 @@
         var bulge = (r() < 0.55 ? -1 : 1) * (0.4 + r() * 0.4), dx = b[0] - a[0];
         var P = bez(a, [a[0] + dx * 0.15, a[1] + bulge], [b[0] - dx * 0.15, b[1] + bulge * 0.9], b, 40);
         if (r() < 0.45) P = P.slice(0, Math.floor(P.length * (0.7 + r() * 0.2)));
-        grow(r, E, nid, p, { pts: P, len: Math.abs(dx) + Math.abs(bulge), d0: 90, tip: r() < 0.5 ? 'curl' : r() < 0.5 ? 'leaf' : 'rose' });
+        grow(r, E, nid, p, { pts: P, len: Math.abs(dx) + Math.abs(bulge), d0: 90, tip: r() < 0.5 ? 'curl' : r() < 0.5 || r() >= p.dens ? 'leaf' : 'rose' });
       }
       if (l.wi === 0) grow(r, E, nid, p, { base: [-w * 0.3, -0.15 - r() * 0.4], dir: Math.PI + (r() - 0.5) * 1.2, len: 0.45 + r() * 0.3, d0: 120, tip: 'curl' });
       l.els = E;
@@ -232,12 +233,12 @@
     }
 
     function genEnd(l, rel) {
-      var r = rng(l.ws + l.wi * 31 + Math.floor(Math.random() * 1e6)), p = wordParams(l.ws), E = [];
+      var r = rng(l.ws + l.wi * 31 + Math.floor(Math.random() * 1e6)), p = wordParams(l.ws, density), E = [];
       var k0 = 50, nid = function () { return l.id * 100 + (k0++); };
       var w = mw(l.ch), n = 1 + Math.floor(r() * 2.5); p.w = w;
       for (var i = 0; i < n; i++) {
         var dir = -Math.PI / 2 + 0.6 + (i - (n - 1) / 2) * 0.9 + (r() - 0.5) * 0.4;
-        grow(r, E, nid, p, { base: [(r() - 0.2) * w * 0.6, -r() * 0.5], dir: dir, len: 0.4 + r() * 0.45, d0: rel + 40 + i * 90, depth: 1, tip: i === 0 || r() < 0.5 ? 'rose' : 'fan' });
+        grow(r, E, nid, p, { base: [(r() - 0.2) * w * 0.6, -r() * 0.5], dir: dir, len: 0.4 + r() * 0.45, d0: rel + 40 + i * 90, depth: 1, tip: r() < (i === 0 ? 1 : 0.5) * p.dens ? 'rose' : 'fan' });
       }
       l.endEls = E;
     }

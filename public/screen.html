@@ -21,6 +21,18 @@
         <p class="skipnote" id="skipnote" role="status" hidden></p>
       </div>
       <div class="selector" id="selector"></div>
+      <div class="coin-panel">
+        <form class="slot compact" id="form">
+          <input id="url" name="url" type="url" inputmode="url" placeholder="paste a youtube link" aria-label="youtube link" required autocomplete="off">
+          <div class="pair">
+            <input id="by" name="by" type="text" maxlength="24" placeholder="your name" aria-label="your name" autocomplete="nickname">
+            <input id="dedication" name="dedication" type="text" maxlength="40" placeholder="dedicate it" aria-label="dedication" autocomplete="off">
+          </div>
+          <button class="coin" id="coin" type="submit">drop<br>a coin</button>
+          <p class="msg" id="msg" role="status">One coin plays one song.</p>
+          <button class="rose" id="rose" type="button" aria-label="Throw a rose at the screen">🌹<small>throw</small></button>
+        </form>
+      </div>
       <div class="grille"></div>
     </div>
 
@@ -31,24 +43,11 @@
         <h1 class="neon">jukebox</h1>
         <div class="join">
           <span>pick the next song on your phone</span><b id="join"></b>
-          <form class="slot compact" id="form">
-            <label for="url">or paste a youtube link here</label>
-            <input id="url" name="url" type="url" inputmode="url" placeholder="https://youtu.be/…" required autocomplete="off">
-            <div class="pair">
-              <input id="by" name="by" type="text" maxlength="24" placeholder="your name" aria-label="your name" autocomplete="nickname">
-              <input id="dedication" name="dedication" type="text" maxlength="40" placeholder="dedicate it" aria-label="dedication" autocomplete="off">
-            </div>
-            <div class="coin-row">
-              <button class="coin" id="coin" type="submit">drop<br>a coin</button>
-              <p class="msg" id="msg" role="status">One coin plays one song.</p>
-              <button class="rose" id="rose" type="button" aria-label="Throw a rose at the screen">🌹<small>throw</small></button>
-            </div>
-          </form>
         </div>
       </header>
       <footer class="stage-bottom">
         <div class="now" id="now"></div>
-        <p class="credit"><span id="listeners"></span><span id="source"></span><span>lyrics bloom with Type Garden by Akshat Agarwal</span></p>
+        <p class="listeners" id="listeners"></p>
       </footer>
     </section>
   </main>
@@ -61,6 +60,7 @@
 
   <script src="/scenes.js" defer></script>
   <script src="/garden.js" defer></script>
+  <script src="/pace.js" defer></script>
   <script src="/coin.js" defer></script>
   <script src="/screen.js" defer></script>
 </body>
