@@ -68,17 +68,13 @@ function render() {
 async function loadLyrics(song) {
   lyrics = { lines: [] };
   lineIndex = -2;
-  $("source").textContent = "";
   showLine(song.title);
   try {
     const res = await fetch(`/api/lyrics?id=${encodeURIComponent(song.id)}`);
     const data = await res.json();
     if (current !== song.id) return;
     lyrics = data.lines?.length ? data : { lines: [] };
-    $("source").textContent = data.source ? `lyrics: ${data.source} via lrclib` : "no synced lyrics found";
-  } catch {
-    $("source").textContent = "no synced lyrics found";
-  }
+  } catch {}
 }
 
 function showLine(text) {
@@ -166,7 +162,6 @@ function sync() {
     current = null;
     showLine("");
     $("marquee").hidden = true;
-    $("source").textContent = "";
     render();
     return;
   }

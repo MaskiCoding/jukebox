@@ -58,3 +58,20 @@ test("the hidden attribute beats every display rule in style.css", async () => {
   const css = await readFile(new URL("./public/style.css", import.meta.url), "utf8");
   assert.match(css, /^\[hidden\] \{ display: none !important; \}$/m);
 });
+
+test("the screen's coin slot sits in the cabinet above a slim grille, clear of the stage", async () => {
+  const html = await readFile(new URL("./public/screen.html", import.meta.url), "utf8");
+  const at = (needle) => html.indexOf(needle);
+  assert.ok(at('class="cabinet"') < at('id="form"') && at('id="form"') < at('class="stage"'), "the form is inside the cabinet");
+  assert.ok(at('class="grille"') > at('id="form"'), "a grille follows the form");
+  assert.doesNotMatch(html, /coin-row/, "the compact grid places the coin, message and rose directly");
+  assert.doesNotMatch(html.slice(at('class="join"'), at("</header>")), /<form/);
+});
+
+test("the screen shows no credit line and the README credits Type Garden", async () => {
+  const html = await readFile(new URL("./public/screen.html", import.meta.url), "utf8");
+  const readme = await readFile(new URL("./README.md", import.meta.url), "utf8").catch(() => "");
+  assert.doesNotMatch(html, /Type Garden/);
+  assert.match(readme, /Type Garden/);
+  assert.ok(readme.includes("https://type-garden.vercel.app/"));
+});
