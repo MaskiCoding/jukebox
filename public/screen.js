@@ -208,7 +208,7 @@ $("plug").addEventListener("click", plugIn);
 
 document.fonts.load('700 100px "Playfair Display"').finally(() => {
   if (window.Garden) {
-    garden = window.Garden.create($("garden"), { transparent: true, palette: paletteFor(state?.playing) });
+    garden = window.Garden.create($("garden"), { transparent: true, palette: paletteFor(state?.playing), density: 0.55 });
     $("lyric").hidden = true;
   }
 });

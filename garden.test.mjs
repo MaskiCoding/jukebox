@@ -5,12 +5,12 @@ import vm from "node:vm";
 
 const source = readFileSync(new URL("./public/garden.js", import.meta.url), "utf8");
 
-function loadGarden() {
+function loadGarden(options = {}, math = Math) {
   const calls = [];
   const frames = [];
   let now = 0;
   const ctx = new Proxy({}, {
-    get: (target, key) => key in target ? target[key] : (key === "measureText" ? () => ({ width: 60 }) : (...args) => calls.push([key, ...args])),
+    get: (target, key) => key in target ? target[key] : (key === "measureText" ? () => ({ width: 60 }) : key === "fill" ? () => calls.push([key, target.fillStyle]) : (...args) => calls.push([key, ...args])),
     set: (target, key, value) => { target[key] = value; return true; },
   });
   const canvas = { getContext: () => ctx, getBoundingClientRect: () => ({ width: 800, height: 400, left: 0, top: 0 }) };
@@ -22,9 +22,9 @@ function loadGarden() {
     performance: { now: () => now },
     requestAnimationFrame: (fn) => frames.push(fn),
     cancelAnimationFrame() {},
-    Math,
+    Math: math,
   });
-  const garden = window.Garden.create(canvas, { transparent: true });
+  const garden = window.Garden.create(canvas, { transparent: true, ...options });
   const advance = (ms) => {
     now += ms;
     frames.splice(0).forEach((fn) => fn());
@@ -51,4 +51,32 @@ test("rose blooms petals at the given spot and withers away", () => {
   calls.length = 0;
   advance(16);
   assert.equal(calls.filter(([name]) => name === "fill").length, 0, "the rose is gone after its life");
+});
+
+function seeded(seed) {
+  let s = seed;
+  return () => {
+    s = (s * 1664525 + 1013904223) % 4294967296;
+    return s / 4294967296;
+  };
+}
+
+test("a lower density grows fewer stems, leaves and roses for the same letters", () => {
+  const red = "#FF1400";
+  const drawn = (density) => {
+    const { garden, calls, advance } = loadGarden({ density }, Object.create(Math, { random: { value: seeded(42) } }));
+    for (const ch of "we are young tonight we set the world on fire") garden.type(ch);
+    advance(16);
+    advance(4000);
+    calls.length = 0;
+    advance(16);
+    return {
+      shapes: calls.filter(([name]) => name === "stroke" || name === "fill").length,
+      petals: calls.filter(([name, style]) => name === "fill" && style === red).length,
+    };
+  };
+  const full = drawn(1);
+  const sparse = drawn(0.55);
+  assert.ok(sparse.shapes < full.shapes, `density 0.55 drew ${sparse.shapes} shapes, density 1 drew ${full.shapes}`);
+  assert.ok(sparse.petals <= full.petals * 0.65, `density 0.55 drew ${sparse.petals} rose petals, density 1 drew ${full.petals}`);
 });
