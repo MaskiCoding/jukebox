@@ -10,6 +10,7 @@ let lyrics = { lines: [] };
 let lineIndex = -2;
 let lineChars = [];
 let typed = 0;
+let lineStart = 0;
 let seenSkip;
 let skipTimer = 0;
 
@@ -80,6 +81,7 @@ async function loadLyrics(song) {
 function showLine(text) {
   lineChars = Array.from(text);
   typed = 0;
+  lineStart = performance.now();
   garden?.clear();
   $("lyric").textContent = "";
 }
@@ -134,7 +136,7 @@ function tick() {
   if (!ready || !current) return;
   const lines = lyrics.lines;
   if (!lines.length) {
-    typeTo(Math.floor((performance.now() / 90) % 100000));
+    typeTo(window.Pace.lyricProgress((performance.now() - lineStart) / 1000, 0, lineChars.length, 0.18));
     return;
   }
   const t = player.getCurrentTime?.() ?? 0;
@@ -150,8 +152,7 @@ function tick() {
   if (idx < 0) return;
   const start = lines[idx].t;
   const end = lines[idx + 1]?.t ?? start + 4;
-  const p = Math.min(1, Math.max(0, (t - start) / Math.max(0.6, (end - start) * 0.7)));
-  typeTo(Math.ceil(p * lineChars.length));
+  typeTo(window.Pace.lyricProgress(t - start, end - start, lineChars.length, 0.07));
 }
 
 function sync() {
