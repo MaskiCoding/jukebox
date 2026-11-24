@@ -178,7 +178,7 @@ async function serveFile(res, path) {
   }
 }
 
-const server = http.createServer(async (req, res) => {
+export const server = http.createServer(async (req, res) => {
   const { pathname } = new URL(req.url, "http://localhost");
 
   if (req.method === "GET" && pathname === "/healthz") return send(res, 200, { ok: true });
