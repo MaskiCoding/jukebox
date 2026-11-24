@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Jukebox · pick a song</title>
+  <meta name="theme-color" content="#140f0c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&family=Special+Elite&display=swap">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="add-page">
+    <header>
+      <h1 class="neon">jukebox</h1>
+      <p>paste a YouTube link and drop a coin</p>
+    </header>
+
+    <form class="slot" id="form">
+      <label for="url">youtube link</label>
+      <input id="url" name="url" type="url" inputmode="url" placeholder="https://youtu.be/…" required autocomplete="off">
+      <label for="by">your name</label>
+      <input id="by" name="by" type="text" maxlength="24" placeholder="optional" autocomplete="nickname">
+      <div class="coin-row">
+        <button class="coin" id="coin" type="submit">drop<br>a coin</button>
+        <p class="msg" id="msg" role="status">One coin plays one song.</p>
+      </div>
+    </form>
+
+    <section class="card">
+      <h3>now playing</h3>
+      <div id="playing"></div>
+    </section>
+
+    <section class="card">
+      <h3>up next · tap to push it up</h3>
+      <ul class="list" id="queue"></ul>
+    </section>
+  </main>
+  <script src="/add.js" defer></script>
+</body>
+</html>

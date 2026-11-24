@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jukebox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&family=Playfair+Display:wght@700&family=Special+Elite&display=swap">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="screen-page">
+    <div class="cabinet" id="cabinet">
+      <div class="window">
+        <div id="player"></div>
+        <div class="idle" id="idle">The jukebox is quiet.<br>Drop a coin from your phone.</div>
+      </div>
+      <div class="selector" id="selector"></div>
+      <div class="grille"></div>
+    </div>
+
+    <section class="stage">
+      <canvas id="garden" aria-hidden="true"></canvas>
+      <p class="lyric-fallback" id="lyric" aria-live="polite"></p>
+      <header class="stage-top">
+        <h1 class="neon">jukebox</h1>
+        <div class="join"><span>pick the next song</span><b id="join"></b></div>
+      </header>
+      <footer class="stage-bottom">
+        <div class="now" id="now"></div>
+        <p class="credit"><span id="listeners"></span><span id="source"></span><span>lyrics bloom with Type Garden by Akshat Agarwal</span></p>
+      </footer>
+    </section>
+  </main>
+
+  <button class="plug" id="plug" type="button">
+    <span class="switch" aria-hidden="true"></span>
+    plug in the jukebox
+    <small>click once so the browser lets it play sound</small>
+  </button>
+
+  <script src="/garden.js" defer></script>
+  <script src="/screen.js" defer></script>
+</body>
+</html>

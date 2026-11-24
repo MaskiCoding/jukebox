@@ -1,0 +1,15 @@
+{
+  "name": "jukebox",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A room jukebox: phones queue YouTube songs, one big screen plays them.",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
