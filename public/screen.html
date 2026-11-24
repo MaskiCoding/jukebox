@@ -9,13 +9,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&family=Playfair+Display:wght@700&family=Special+Elite&display=swap">
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/scenes.css">
 </head>
-<body>
+<body data-scene="lounge">
   <main class="screen-page">
     <div class="cabinet" id="cabinet">
+      <div class="marquee" id="marquee" hidden><span class="neon" id="marquee-text"></span></div>
       <div class="window">
         <div id="player"></div>
-        <div class="idle" id="idle">The jukebox is quiet.<br>Drop a coin from your phone.</div>
+        <div class="idle" id="idle">The jukebox is quiet.<br>Drop a coin here or from your phone.</div>
+        <p class="skipnote" id="skipnote" role="status" hidden></p>
       </div>
       <div class="selector" id="selector"></div>
       <div class="grille"></div>
@@ -26,7 +29,22 @@
       <p class="lyric-fallback" id="lyric" aria-live="polite"></p>
       <header class="stage-top">
         <h1 class="neon">jukebox</h1>
-        <div class="join"><span>pick the next song</span><b id="join"></b></div>
+        <div class="join">
+          <span>pick the next song on your phone</span><b id="join"></b>
+          <form class="slot compact" id="form">
+            <label for="url">or paste a youtube link here</label>
+            <input id="url" name="url" type="url" inputmode="url" placeholder="https://youtu.be/…" required autocomplete="off">
+            <div class="pair">
+              <input id="by" name="by" type="text" maxlength="24" placeholder="your name" aria-label="your name" autocomplete="nickname">
+              <input id="dedication" name="dedication" type="text" maxlength="40" placeholder="dedicate it" aria-label="dedication" autocomplete="off">
+            </div>
+            <div class="coin-row">
+              <button class="coin" id="coin" type="submit">drop<br>a coin</button>
+              <p class="msg" id="msg" role="status">One coin plays one song.</p>
+              <button class="rose" id="rose" type="button" aria-label="Throw a rose at the screen">🌹<small>throw</small></button>
+            </div>
+          </form>
+        </div>
       </header>
       <footer class="stage-bottom">
         <div class="now" id="now"></div>
@@ -41,7 +59,9 @@
     <small>click once so the browser lets it play sound</small>
   </button>
 
+  <script src="/scenes.js" defer></script>
   <script src="/garden.js" defer></script>
+  <script src="/coin.js" defer></script>
   <script src="/screen.js" defer></script>
 </body>
 </html>

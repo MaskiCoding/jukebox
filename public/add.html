@@ -22,10 +22,14 @@
       <input id="url" name="url" type="url" inputmode="url" placeholder="https://youtu.be/…" required autocomplete="off">
       <label for="by">your name</label>
       <input id="by" name="by" type="text" maxlength="24" placeholder="optional" autocomplete="nickname">
+      <label for="dedication">dedicate it</label>
+      <input id="dedication" name="dedication" type="text" maxlength="40" placeholder="optional, up in neon when it starts" autocomplete="off">
       <div class="coin-row">
         <button class="coin" id="coin" type="submit">drop<br>a coin</button>
         <p class="msg" id="msg" role="status">One coin plays one song.</p>
+        <button class="rose" id="rose" type="button" aria-label="Throw a rose at the screen">🌹<small>throw</small></button>
       </div>
+      <p class="hint">Official label videos often refuse to play outside YouTube. Lyric videos and “Artist - Topic” audio uploads almost always work.</p>
     </form>
 
     <section class="card">
@@ -38,6 +42,7 @@
       <ul class="list" id="queue"></ul>
     </section>
   </main>
+  <script src="/coin.js" defer></script>
   <script src="/add.js" defer></script>
 </body>
 </html>

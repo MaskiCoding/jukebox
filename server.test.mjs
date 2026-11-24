@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseLrc, searchTerms, videoIdFrom } from "./server.mjs";
+import { readFile } from "node:fs/promises";
+import { parseLrc, sceneFrom, searchTerms, videoIdFrom } from "./server.mjs";
 
 test("videoIdFrom reads every common YouTube link shape", () => {
   const id = "dQw4w9WgXcQ";
@@ -32,4 +33,28 @@ test("parseLrc reads timestamps and keeps empty lines as gaps", () => {
     { t: 16.85, text: "you can dance" },
     { t: 62.5, text: "" },
   ]);
+});
+
+test("sceneFrom maps Deezer genre ids, bpm and keywords to a scene", () => {
+  const cases = [
+    [{ genres: [113] }, "club"],
+    [{ genres: [-1, 106] }, "club"],
+    [{ genres: [84] }, "ranch"],
+    [{ genres: [98] }, "opera"],
+    [{ genres: [464] }, "forge"],
+    [{ genres: [116] }, "rooftop"],
+    [{ genres: [132], bpm: 124 }, "disco"],
+    [{ genres: [132], bpm: 90 }, "arena"],
+    [{ genres: [132], text: "Disco Inferno" }, "disco"],
+    [{ genres: [132], bpm: 130, text: "Last Christmas Wham!" }, "cabin"],
+    [{ genres: [95], text: "Nessun Dorma aria" }, "opera"],
+    [{ text: "Some Song Band" }, "lounge"],
+    [{}, "lounge"],
+  ];
+  for (const [input, scene] of cases) assert.equal(sceneFrom(input), scene, JSON.stringify(input));
+});
+
+test("the hidden attribute beats every display rule in style.css", async () => {
+  const css = await readFile(new URL("./public/style.css", import.meta.url), "utf8");
+  assert.match(css, /^\[hidden\] \{ display: none !important; \}$/m);
 });
